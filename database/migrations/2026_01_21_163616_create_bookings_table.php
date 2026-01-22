@@ -61,7 +61,10 @@ return new class extends Migration
             $table->timestamps();
 
             // INDEX untuk performa query
-            $table->index(['booking_code', 'booking_date', 'booking_status', 'payment_status']);
+            $table->index(
+                ['booking_code', 'booking_date', 'booking_status', 'payment_status'],
+                'idx_bookings_main'
+            );
         });
     }
 
