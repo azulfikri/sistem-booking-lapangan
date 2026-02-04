@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminFieldController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,34 +21,15 @@ Route::post('/logout', [LogoutController::class, 'logout'])->name('logout')->mid
 // ADMIN ROUTES (Protected)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // Kelola Lapangan (Fields Management)
-    Route::get('/lapangan', function () {
-        return view('admin.lapangan.index');
-    })->name('lapangan');
-    
-    Route::get('/lapangan/create', function () {
-        return view('admin.lapangan.create');
-    })->name('lapangan.create');
-    
-    Route::post('/lapangan', function () {
-        // Store logic here
-    })->name('lapangan.store');
-    
-    Route::get('/lapangan/{id}/edit', function ($id) {
-        return view('admin.lapangan.edit', compact('id'));
-    })->name('lapangan.edit');
-    
-    Route::put('/lapangan/{id}', function ($id) {
-        // Update logic here
-    })->name('lapangan.update');
-    
-    Route::delete('/lapangan/{id}', function ($id) {
-        // Delete logic here
-    })->name('lapangan.destroy');
+    Route::get('/lapangan', [AdminFieldController::class, 'index'])->name('lapangan');
+    Route::get('/lapangan/create', [AdminFieldController::class, 'create'])->name('lapangan.create');
+    Route::post('/lapangan', [AdminFieldController::class, 'store'])->name('lapangan.store');
+    Route::get('/lapangan/{id}/edit', [AdminFieldController::class, 'edit'])->name('lapangan.edit');
+    Route::put('/lapangan/{id}', [AdminFieldController::class, 'update'])->name('lapangan.update');
+    Route::delete('/lapangan/{id}', [AdminFieldController::class, 'destroy'])->name('lapangan.destroy');
 
     // Pesanan Masuk (Bookings)
     Route::get('/bookings', function () {
