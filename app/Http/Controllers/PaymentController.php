@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Services\MidtransService;
+use App\Jobs\SendPaymentConfirmationEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -136,6 +137,11 @@ class PaymentController extends Controller
                 }
 
                 $booking->save();
+
+                // Send payment confirmation email if payment is successful
+                if ($paymentStatus === 'paid') {
+                    SendPaymentConfirmationEmail::dispatch($booking->load('field'));
+                }
 
                 DB::commit();
 

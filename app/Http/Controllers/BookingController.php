@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBookingRequest;
 use App\Models\Booking;
 use App\Models\Field;
+use App\Jobs\SendBookingConfirmationEmail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -146,6 +147,9 @@ class BookingController extends Controller
             'booking_status' => 'pending',
             'notes' => $validated['notes'] ?? null,
         ]);
+        
+        // Dispatch email notification job
+        SendBookingConfirmationEmail::dispatch($booking->load('field'));
         
         // Redirect to confirmation page
         return redirect()
