@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminFieldController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminBookingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -50,15 +51,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/users/{id}', [AdminUserController::class, 'destroy'])->name('users.destroy');
 
     // Pesanan Masuk (Bookings)
-    Route::get('/bookings', function () {
-        return view('admin.bookings.index');
-    })->name('bookings');
-    
-    Route::get('/bookings/{id}', function ($id) {
-        return view('admin.bookings.show', compact('id'));
-    })->name('bookings.show');
-    
-    Route::patch('/bookings/{id}/status', function ($id) {
-        // Update booking status
-    })->name('bookings.updateStatus');
+    Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings');
+    Route::get('/bookings/{id}', [AdminBookingController::class, 'show'])->name('bookings.show');
+    Route::patch('/bookings/{id}/payment', [AdminBookingController::class, 'updatePaymentStatus'])->name('bookings.updatePayment');
+    Route::patch('/bookings/{id}/status', [AdminBookingController::class, 'updateBookingStatus'])->name('bookings.updateStatus');
+    Route::delete('/bookings/{id}', [AdminBookingController::class, 'destroy'])->name('bookings.destroy');
 });
