@@ -131,11 +131,16 @@
                 @elseif($booking->payment_method === 'midtrans')
                     <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
                         <p class="font-semibold text-purple-900 mb-2">Pembayaran Online (Midtrans)</p>
-                        <p class="text-sm text-purple-800 mb-4">Klik tombol di bawah untuk melanjutkan ke halaman pembayaran.</p>
-                        <button class="w-full px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
-                            Bayar Sekarang
-                        </button>
-                        <p class="text-xs text-purple-700 mt-2">Anda akan diarahkan ke halaman pembayaran Midtrans yang aman.</p>
+                        
+                        @if(in_array($booking->payment_status, ['unpaid', 'pending']))
+                            <p class="text-sm text-purple-800 mb-4">Klik tombol di bawah untuk melanjutkan ke halaman pembayaran.</p>
+                            <a href="{{ route('payment.process', $booking->booking_code) }}" class="block w-full px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors text-center">
+                                Bayar Sekarang
+                            </a>
+                            <p class="text-xs text-purple-700 mt-2">Anda akan diarahkan ke halaman pembayaran Midtrans yang aman.</p>
+                        @else
+                            <p class="text-sm text-purple-800">Pembayaran sudah diproses.</p>
+                        @endif
                     </div>
                 @endif
 

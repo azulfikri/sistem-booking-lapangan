@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminFieldController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminBookingController;
+use App\Http\Controllers\PaymentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -57,3 +58,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/bookings/{id}/status', [AdminBookingController::class, 'updateBookingStatus'])->name('bookings.updateStatus');
     Route::delete('/bookings/{id}', [AdminBookingController::class, 'destroy'])->name('bookings.destroy');
 });
+
+// BOOKING ROUTES (Public)
+Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
+Route::get('/booking/create/{field}', [BookingController::class, 'create'])->name('booking.create');
+Route::post('/booking/check-availability', [BookingController::class, 'checkAvailability'])->name('booking.check');
+Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
+Route::get('/booking/{code}', [BookingController::class, 'show'])->name('booking.show');
+Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('booking.my')->middleware('auth');
+
+// PAYMENT ROUTES (Public)
+Route::get('/payment/{code}', [PaymentController::class, 'processPayment'])->name('payment.process');
+Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
