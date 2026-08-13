@@ -10,6 +10,7 @@ class Field extends Model
     protected $table = 'fields';
     protected $fillable = [
         'name',
+        'type',
         'price_per_hour',
         'description',
         'photo',
@@ -41,5 +42,9 @@ class Field extends Model
     public function scopeMaintenance($query)
     {
         return $query->where('status', 'maintenance');
+    }
+    public function scopeByType($query, $type)
+    {
+        return $query->where('type', $type);
     }
 }

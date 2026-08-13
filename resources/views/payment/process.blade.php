@@ -1,123 +1,73 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pembayaran - {{ $booking->booking_code }}</title>
-    @vite('resources/css/app.css')
-    <script type="text/javascript"
-        src="{{ config('midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
-        data-client-key="{{ $clientKey }}">
-    </script>
-</head>
-<body class="bg-gray-50">
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div class="flex justify-between items-center">
-                <h1 class="text-2xl font-bold text-gray-900">Pembayaran</h1>
-                <a href="{{ route('booking.show', $booking->booking_code) }}" class="text-gray-600 hover:text-gray-900">
-                    Kembali
-                </a>
-            </div>
-        </div>
-    </header>
+@extends('layouts.app')
 
-    <!-- Main Content -->
-    <main class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Booking Summary -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-            <h2 class="text-lg font-bold text-gray-900 mb-4">Ringkasan Pesanan</h2>
-            
-            <div class="space-y-3 mb-4">
-                <div class="flex justify-between">
-                    <span class="text-gray-600">Kode Booking</span>
-                    <span class="font-semibold text-gray-900">{{ $booking->booking_code }}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-600">Lapangan</span>
-                    <span class="font-semibold text-gray-900">{{ $booking->field->name }}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-600">Tanggal</span>
-                    <span class="font-semibold text-gray-900">{{ \Carbon\Carbon::parse($booking->booking_date)->format('d M Y') }}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-600">Waktu</span>
-                    <span class="font-semibold text-gray-900">{{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-600">Durasi</span>
-                    <span class="font-semibold text-gray-900">{{ $booking->duration }} Jam</span>
+@section('title', 'Pembayaran — ' . $booking->booking_code)
+
+@section('content')
+
+{{-- Page Header --}}
+<section class="bg-gradient-hero pt-28 pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-3xl font-bold text-white animate-fade-in-up">Pembayaran Online</h1>
+        <p class="text-white/60 mt-2 animate-fade-in-up delay-100">Selesaikan pembayaran untuk booking Anda.</p>
+    </div>
+</section>
+
+<section class="py-12 bg-surface-50">
+    <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="card-admin rounded-2xl p-6 sm:p-8 text-center animate-scale-in">
+            {{-- Booking Summary --}}
+            <div class="mb-8">
+                <p class="text-sm text-surface-500 mb-1">Kode Booking</p>
+                <p class="text-2xl font-black text-primary-600 tracking-widest mb-4">{{ $booking->booking_code }}</p>
+
+                <div class="bg-surface-50 rounded-xl p-4 text-left space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-surface-500">Lapangan</span>
+                        <span class="font-medium">{{ $booking->field->name }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-surface-500">Jadwal</span>
+                        <span class="font-medium">{{ $booking->formatted_date }}, {{ $booking->time_range }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm border-t border-surface-200 pt-2 mt-2">
+                        <span class="font-semibold text-surface-700">Total Bayar</span>
+                        <span class="font-bold text-primary-600">{{ $booking->formatted_price }}</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="border-t border-gray-200 pt-4">
-                <div class="flex justify-between items-center">
-                    <span class="text-lg font-medium text-gray-700">Total Pembayaran:</span>
-                    <span class="text-2xl font-bold text-emerald-600">Rp {{ number_format($booking->total_price, 0, ',', '.') }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Payment Button -->
-        <div class="bg-gradient-to-r from-emerald-500 to-cyan-600 rounded-xl p-8 text-white text-center">
-            <svg class="w-16 h-16 mx-auto mb-4 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-            </svg>
-            <h3 class="text-2xl font-bold mb-2">Siap untuk Pembayaran?</h3>
-            <p class="mb-6 opacity-90">Klik tombol di bawah untuk melanjutkan ke halaman pembayaran yang aman</p>
-            <button 
-                id="pay-button" 
-                class="px-8 py-4 bg-white text-emerald-600 font-bold rounded-lg hover:bg-gray-100 transition-colors shadow-lg text-lg"
-            >
+            {{-- Pay Button --}}
+            <button id="pay-button" class="btn-primary w-full py-4 text-base gap-2">
+                <i data-lucide="credit-card" class="w-5 h-5"></i>
                 Bayar Sekarang
             </button>
-            <p class="mt-4 text-sm opacity-75">Powered by Midtrans - Secure Payment Gateway</p>
+
+            <p class="text-xs text-surface-400 mt-4">Pembayaran diproses melalui Midtrans (aman & terenkripsi).</p>
         </div>
+    </div>
+</section>
 
-        <!-- Information -->
-        <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div class="flex items-start">
-                <svg class="w-5 h-5 text-blue-600 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <div class="text-sm text-blue-800">
-                    <p class="font-semibold mb-1">Informasi Pembayaran:</p>
-                    <ul class="list-disc list-inside space-y-1">
-                        <li>Anda akan diarahkan ke halaman pembayaran Midtrans yang aman</li>
-                        <li>Metode pembayaran: Transfer Bank, Kartu Kredit, E-Wallet, dll</li>
-                        <li>Status pembayaran akan otomatis diperbarui setelah pembayaran berhasil</li>
-                        <li>Jika ada kendala, hubungi customer service kami</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </main>
+@endsection
 
-    <script type="text/javascript">
-        const payButton = document.getElementById('pay-button');
-        const snapToken = '{{ $snapToken }}';
-
-        payButton.addEventListener('click', function () {
-            snap.pay(snapToken, {
-                onSuccess: function(result) {
-                    console.log('Payment success:', result);
-                    window.location.href = '{{ route('payment.callback') }}?order_id={{ $booking->booking_code }}';
-                },
-                onPending: function(result) {
-                    console.log('Payment pending:', result);
-                    window.location.href = '{{ route('payment.callback') }}?order_id={{ $booking->booking_code }}';
-                },
-                onError: function(result) {
-                    console.log('Payment error:', result);
-                    alert('Pembayaran gagal. Silakan coba lagi.');
-                },
-                onClose: function() {
-                    console.log('Payment popup closed');
-                }
-            });
+@push('scripts')
+<script src="https://app.{{ config('midtrans.is_production') ? '' : 'sandbox.' }}midtrans.com/snap/snap.js" data-client-key="{{ $clientKey }}"></script>
+<script>
+    document.getElementById('pay-button').addEventListener('click', function() {
+        snap.pay('{{ $snapToken }}', {
+            onSuccess: function(result) {
+                window.location.href = '{{ route("payment.callback") }}?order_id={{ $booking->booking_code }}';
+            },
+            onPending: function(result) {
+                window.location.href = '{{ route("payment.callback") }}?order_id={{ $booking->booking_code }}';
+            },
+            onError: function(result) {
+                alert('Pembayaran gagal. Silakan coba lagi.');
+                window.location.href = '{{ route("booking.show", $booking->booking_code) }}';
+            },
+            onClose: function() {
+                // User closed popup without completing payment
+            }
         });
-    </script>
-</body>
-</html>
+    });
+</script>
+@endpush

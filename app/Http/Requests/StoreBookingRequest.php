@@ -69,11 +69,11 @@ class StoreBookingRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        // Jam operasional validation (06:00 - 22:00)
+        // Jam operasional validation (07:00 - 23:00)
         if ($this->start_time) {
             $hour = (int) substr($this->start_time, 0, 2);
             
-            if ($hour < 6 || $hour >= 22) {
+            if ($hour < 7 || $hour >= 23) {
                 $this->merge([
                     'start_time' => null, // Force validation to fail
                 ]);

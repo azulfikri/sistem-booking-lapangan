@@ -1,211 +1,83 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konfirmasi Booking</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .email-container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .header {
-            background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        .booking-code {
-            background-color: rgba(255,255,255,0.2);
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 28px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            margin-top: 15px;
-        }
-        .content {
-            padding: 30px 20px;
-        }
-        .detail-section {
-            background-color: #f9fafb;
-            border-left: 4px solid #10b981;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        .label {
-            color: #6b7280;
-            font-weight: 500;
-        }
-        .value {
-            font-weight: 600;
-            color: #111827;
-        }
-        .total-section {
-            background-color: #ecfdf5;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        .total-label {
-            color: #059669;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-        .total-amount {
-            color: #065f46;
-            font-size: 32px;
-            font-weight: bold;
-        }
-        .payment-instructions {
-            background-color: #eff6ff;
-            border: 2px solid #3b82f6;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .payment-instructions h3 {
-            color: #1e40af;
-            margin-top: 0;
-        }
-        .bank-details {
-            background-color: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        .button {
-            display: inline-block;
-            padding: 12px 30px;
-            background-color: #10b981;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: 600;
-            margin: 20px 0;
-        }
-        .footer {
-            background-color: #f9fafb;
-            padding: 20px;
-            text-align: center;
-            font-size: 12px;
-            color: #6b7280;
-        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background: #f1f5f9; color: #1e293b; }
+        .wrapper { max-width: 600px; margin: 0 auto; padding: 24px; }
+        .card { background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+        .header { background: linear-gradient(135deg, #1449e1, #3380ff); padding: 32px; text-align: center; }
+        .header h1 { color: #ffffff; font-size: 22px; margin: 0 0 8px; }
+        .header p { color: rgba(255,255,255,0.8); font-size: 14px; margin: 0; }
+        .body { padding: 32px; }
+        .badge { display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; background: #ecfdf5; color: #059669; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .info-label { color: #64748b; font-size: 14px; }
+        .info-value { font-weight: 600; font-size: 14px; color: #1e293b; }
+        .total-row { display: flex; justify-content: space-between; padding: 16px 0; margin-top: 8px; }
+        .total-value { font-size: 20px; font-weight: 700; color: #1449e1; }
+        .footer { padding: 24px 32px; text-align: center; border-top: 1px solid #f1f5f9; }
+        .footer p { color: #94a3b8; font-size: 12px; margin: 4px 0; }
     </style>
 </head>
 <body>
-    <div class="email-container">
-        <!-- Header -->
-        <div class="header">
-            <h1>✅ Booking Berhasil Dibuat!</h1>
-            <div class="booking-code">{{ $booking->booking_code }}</div>
-        </div>
-
-        <!-- Content -->
-        <div class="content">
-            <p>Halo <strong>{{ $booking->guest_name }}</strong>,</p>
-            <p>Terima kasih telah melakukan booking lapangan futsal. Berikut adalah detail booking Anda:</p>
-
-            <!-- Booking Details -->
-            <div class="detail-section">
-                <div class="detail-row">
-                    <span class="label">Lapangan</span>
-                    <span class="value">{{ $booking->field->name }}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="label">Tanggal</span>
-                    <span class="value">{{ \Carbon\Carbon::parse($booking->booking_date)->isoFormat('dddd, D MMMM YYYY') }}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="label">Waktu</span>
-                    <span class="value">{{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }} WIB</span>
-                </div>
-                <div class="detail-row">
-                    <span class="label">Durasi</span>
-                    <span class="value">{{ $booking->duration }} Jam</span>
-                </div>
+    <div class="wrapper">
+        <div class="card">
+            {{-- Header --}}
+            <div class="header">
+                <h1>📋 Konfirmasi Booking</h1>
+                <p>Booking Anda telah berhasil dibuat</p>
             </div>
 
-            <!-- Total Price -->
-            <div class="total-section">
-                <div class="total-label">Total Pembayaran</div>
-                <div class="total-amount">Rp {{ number_format($booking->total_price, 0, ',', '.') }}</div>
-            </div>
+            {{-- Body --}}
+            <div class="body">
+                <p style="margin: 0 0 8px; font-size: 16px;">Halo, <strong>{{ $booking->customer_name }}</strong>!</p>
+                <p style="margin: 0 0 24px; font-size: 14px; color: #64748b;">Berikut detail booking Anda:</p>
 
-            <!-- Payment Instructions -->
-            @if($booking->payment_method === 'transfer')
-                <div class="payment-instructions">
-                    <h3>📋 Instruksi Transfer Bank</h3>
-                    <p>Silakan transfer ke rekening berikut:</p>
-                    <div class="bank-details">
-                        <div class="detail-row">
-                            <span class="label">Bank</span>
-                            <span class="value">BCA</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="label">No. Rekening</span>
-                            <span class="value">1234567890</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="label">Atas Nama</span>
-                            <span class="value">Lapangan Futsal XYZ</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="label">Jumlah</span>
-                            <span class="value">Rp {{ number_format($booking->total_price, 0, ',', '.') }}</span>
-                        </div>
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <p style="color: #64748b; font-size: 13px; margin: 0 0 4px;">Kode Booking</p>
+                    <p style="font-size: 28px; font-weight: 800; color: #1449e1; margin: 0; letter-spacing: 3px;">{{ $booking->booking_code }}</p>
+                </div>
+
+                <div style="background: #f8fafc; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                    <div class="info-row">
+                        <span class="info-label">Lapangan</span>
+                        <span class="info-value">{{ $booking->field->name ?? '-' }}</span>
                     </div>
-                    <p style="margin-top: 15px; font-size: 14px;">Setelah transfer, mohon kirim bukti transfer ke WhatsApp atau email kami.</p>
+                    <div class="info-row">
+                        <span class="info-label">Tanggal</span>
+                        <span class="info-value">{{ $booking->formatted_date }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Waktu</span>
+                        <span class="info-value">{{ $booking->time_range }} ({{ $booking->duration }} jam)</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Metode Bayar</span>
+                        <span class="info-value" style="text-transform: capitalize;">{{ $booking->payment_method }}</span>
+                    </div>
+                    <div class="total-row" style="border-bottom: none;">
+                        <span class="info-label" style="font-weight: 600;">Total</span>
+                        <span class="total-value">{{ $booking->formatted_price }}</span>
+                    </div>
                 </div>
-            @elseif($booking->payment_method === 'cash')
-                <div class="payment-instructions">
-                    <h3>💵 Bayar di Tempat</h3>
-                    <p>Anda dapat membayar langsung di tempat saat datang.</p>
-                    <p><strong>Harap datang 15 menit sebelum waktu booking Anda.</strong></p>
-                </div>
-            @elseif($booking->payment_method === 'midtrans')
-                <div class="payment-instructions">
-                    <h3>💳 Pembayaran Online</h3>
-                    <p>Klik tombol di bawah untuk melanjutkan pembayaran:</p>
-                    <a href="{{ route('payment.process', $booking->booking_code) }}" class="button">Bayar Sekarang</a>
-                    <p style="font-size: 14px; margin-top: 10px;">Anda akan diarahkan ke halaman pembayaran Midtrans yang aman.</p>
-                </div>
-            @endif
 
-            <p style="margin-top: 30px;">Jika ada pertanyaan, jangan ragu untuk menghubungi kami.</p>
-            <p>Terima kasih,<br><strong>Tim Lapangan Futsal</strong></p>
-        </div>
+                @if($booking->payment_method === 'transfer')
+                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                        <p style="font-weight: 600; color: #1e40af; margin: 0 0 8px; font-size: 14px;">💳 Instruksi Transfer:</p>
+                        <p style="color: #1e40af; font-size: 13px; margin: 0;">Bank BCA: <strong>1234567890</strong><br>a.n. Sports Center</p>
+                    </div>
+                @endif
 
-        <!-- Footer -->
-        <div class="footer">
-            <p>Email ini dikirim secara otomatis, mohon tidak membalas email ini.</p>
-            <p>&copy; {{ date('Y') }} Sistem Booking Lapangan Futsal. All rights reserved.</p>
+                <p style="font-size: 13px; color: #94a3b8; text-align: center;">Silakan selesaikan pembayaran agar booking Anda dikonfirmasi.</p>
+            </div>
+
+            {{-- Footer --}}
+            <div class="footer">
+                <p><strong>Sports Center</strong></p>
+                <p>Jam Operasional: 07:00 — 23:00</p>
+            </div>
         </div>
     </div>
 </body>

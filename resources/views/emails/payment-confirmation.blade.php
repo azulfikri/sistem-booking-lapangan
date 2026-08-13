@@ -1,212 +1,76 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pembayaran Berhasil</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .email-container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .header {
-            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        .success-icon {
-            font-size: 60px;
-            margin-bottom: 10px;
-        }
-        .booking-code {
-            background-color: rgba(255,255,255,0.2);
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 28px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            margin-top: 15px;
-        }
-        .content {
-            padding: 30px 20px;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            background-color: #10b981;
-            color: white;
-            border-radius: 20px;
-            font-weight: 600;
-            margin: 10px 0;
-        }
-        .detail-section {
-            background-color: #f9fafb;
-            border-left: 4px solid #8b5cf6;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        .label {
-            color: #6b7280;
-            font-weight: 500;
-        }
-        .value {
-            font-weight: 600;
-            color: #111827;
-        }
-        .invoice-section {
-            background: linear-gradient(135deg, #faf5ff 0%, #fdf4ff 100%);
-            border: 2px solid #d8b4fe;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .invoice-title {
-            color: #7c3aed;
-            text-align: center;
-            margin-top: 0;
-        }
-        .invoice-total {
-            text-align: center;
-            margin: 15px 0;
-        }
-        .invoice-amount {
-            font-size: 36px;
-            font-weight: bold;
-            color: #6d28d9;
-        }
-        .paid-stamp {
-            text-align: center;
-            margin: 15px 0;
-        }
-        .paid-stamp span {
-            display: inline-block;
-            padding: 5px 30px;
-            background-color: #10b981;
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 5px;
-            transform: rotate(-5deg);
-        }
-        .reminder-box {
-            background-color: #fef3c7;
-            border-left: 4px solid #f59e0b;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
-        }
-        .reminder-box h4 {
-            margin-top: 0;
-            color: #92400e;
-        }
-        .footer {
-            background-color: #f9fafb;
-            padding: 20px;
-            text-align: center;
-            font-size: 12px;
-            color: #6b7280;
-        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background: #f1f5f9; color: #1e293b; }
+        .wrapper { max-width: 600px; margin: 0 auto; padding: 24px; }
+        .card { background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+        .header { background: linear-gradient(135deg, #059669, #10b981); padding: 32px; text-align: center; }
+        .header h1 { color: #ffffff; font-size: 22px; margin: 0 0 8px; }
+        .header p { color: rgba(255,255,255,0.8); font-size: 14px; margin: 0; }
+        .body { padding: 32px; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .info-label { color: #64748b; font-size: 14px; }
+        .info-value { font-weight: 600; font-size: 14px; color: #1e293b; }
+        .footer { padding: 24px 32px; text-align: center; border-top: 1px solid #f1f5f9; }
+        .footer p { color: #94a3b8; font-size: 12px; margin: 4px 0; }
     </style>
 </head>
 <body>
-    <div class="email-container">
-        <!-- Header -->
-        <div class="header">
-            <div class="success-icon">🎉</div>
-            <h1>Pembayaran Berhasil!</h1>
-            <div class="booking-code">{{ $booking->booking_code }}</div>
-            <div class="status-badge">✓ LUNAS</div>
-        </div>
+    <div class="wrapper">
+        <div class="card">
+            {{-- Header --}}
+            <div class="header">
+                <h1>✅ Pembayaran Berhasil!</h1>
+                <p>Booking Anda sudah dikonfirmasi</p>
+            </div>
 
-        <!-- Content -->
-        <div class="content">
-            <p>Halo <strong>{{ $booking->guest_name }}</strong>,</p>
-            <p>Pembayaran Anda telah <strong>berhasil dikonfirmasi</strong>! Booking Anda sekarang sudah dikonfirmasi dan siap untuk digunakan.</p>
+            {{-- Body --}}
+            <div class="body">
+                <p style="margin: 0 0 8px; font-size: 16px;">Halo, <strong>{{ $booking->customer_name }}</strong>!</p>
+                <p style="margin: 0 0 24px; font-size: 14px; color: #64748b;">Pembayaran untuk booking Anda telah kami terima. Berikut detailnya:</p>
 
-            <!-- Invoice Section -->
-            <div class="invoice-section">
-                <h3 class="invoice-title">📄 INVOICE</h3>
-                
-                <div class="detail-section" style="background-color: white; border-color: #d8b4fe;">
-                    <div class="detail-row">
-                        <span class="label">Lapangan</span>
-                        <span class="value">{{ $booking->field->name }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="label">Tanggal</span>
-                        <span class="value">{{ \Carbon\Carbon::parse($booking->booking_date)->isoFormat('dddd, D MMMM YYYY') }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="label">Waktu</span>
-                        <span class="value">{{ substr($booking->start_time, 0, 5) }} - {{ substr($booking->end_time, 0, 5) }} WIB</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="label">Durasi</span>
-                        <span class="value">{{ $booking->duration }} Jam</span>
-                    </div>
-                    @if($booking->midtrans_payment_type)
-                    <div class="detail-row">
-                        <span class="label">Metode Pembayaran</span>
-                        <span class="value">{{ ucwords(str_replace('_', ' ', $booking->midtrans_payment_type)) }}</span>
-                    </div>
-                    @endif
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <p style="color: #64748b; font-size: 13px; margin: 0 0 4px;">Kode Booking</p>
+                    <p style="font-size: 28px; font-weight: 800; color: #059669; margin: 0; letter-spacing: 3px;">{{ $booking->booking_code }}</p>
                 </div>
 
-                <div class="invoice-total">
-                    <div style="color: #6b7280; font-size: 14px; margin-bottom: 5px;">Total Dibayar</div>
-                    <div class="invoice-amount">Rp {{ number_format($booking->total_price, 0, ',', '.') }}</div>
+                <div style="background: #f8fafc; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                    <div class="info-row">
+                        <span class="info-label">Lapangan</span>
+                        <span class="info-value">{{ $booking->field->name ?? '-' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Tanggal</span>
+                        <span class="info-value">{{ $booking->formatted_date }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Waktu</span>
+                        <span class="info-value">{{ $booking->time_range }} ({{ $booking->duration }} jam)</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Status</span>
+                        <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #ecfdf5; color: #059669;">Confirmed</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 16px 0; border-bottom: none; margin-top: 8px;">
+                        <span class="info-label" style="font-weight: 600;">Total Dibayar</span>
+                        <span style="font-size: 20px; font-weight: 700; color: #059669;">{{ $booking->formatted_price }}</span>
+                    </div>
                 </div>
 
-                <div class="paid-stamp">
-                    <span>PAID</span>
+                <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 20px; text-align: center;">
+                    <p style="font-weight: 600; color: #065f46; margin: 0 0 4px; font-size: 15px;">🎉 Selamat Bermain!</p>
+                    <p style="color: #047857; font-size: 13px; margin: 0;">Silakan datang tepat waktu sesuai jadwal booking Anda.</p>
                 </div>
             </div>
 
-            <!-- Reminder -->
-            <div class="reminder-box">
-                <h4>📌 Pengingat Penting:</h4>
-                <ul style="margin: 5px 0; padding-left: 20px;">
-                    <li>Harap datang <strong>15 menit sebelum</strong> waktu booking Anda</li>
-                    <li>Bawa bukti booking ini (kode booking: <strong>{{ $booking->booking_code }}</strong>)</li>
-                    <li>Jangan lupa membawa perlengkapan olahraga Anda</li>
-                </ul>
+            {{-- Footer --}}
+            <div class="footer">
+                <p><strong>Sports Center</strong></p>
+                <p>Jam Operasional: 07:00 — 23:00</p>
             </div>
-
-            <p style="margin-top: 30px;">Terima kasih atas kepercayaan Anda. Kami menantikan kedatangan Anda!</p>
-            <p>Selamat bermain! ⚽<br><strong>Tim Lapangan Futsal</strong></p>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <p>Email ini dikirim secara otomatis, mohon tidak membalas email ini.</p>
-            <p>Jika ada pertanyaan, hubungi kami di support@lapanganfutsal.com</p>
-            <p>&copy; {{ date('Y') }} Sistem Booking Lapangan Futsal. All rights reserved.</p>
         </div>
     </div>
 </body>

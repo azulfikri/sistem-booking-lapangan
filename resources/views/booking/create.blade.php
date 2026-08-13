@@ -1,321 +1,252 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Booking - {{ $field->name }}</title>
-    @vite('resources/css/app.css')
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-</head>
-<body class="bg-gray-50">
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div class="flex justify-between items-center">
-                <h1 class="text-2xl font-bold text-gray-900">Form Booking</h1>
-                <a href="{{ route('booking.index') }}" class="text-gray-600 hover:text-gray-900">
-                    ← Kembali ke Daftar Lapangan
-                </a>
-            </div>
-        </div>
-    </header>
+@extends('layouts.app')
 
-    <!-- Main Content -->
-    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        @if(session('error'))
-            <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
-                {{ session('error') }}
-            </div>
-        @endif
+@section('title', 'Booking ' . $field->name)
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Field Info Sidebar -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-6">
-                    <div class="h-48 bg-gradient-to-br from-emerald-500 to-cyan-600 rounded-t-xl relative">
-                        @if($field->photo)
-                            <img src="{{ asset('fields/' . $field->photo) }}" alt="{{ $field->name }}" class="w-full h-full object-cover rounded-t-xl">
-                        @endif
-                    </div>
-                    <div class="p-5">
-                        <h2 class="text-xl font-bold text-gray-900 mb-2">{{ $field->name }}</h2>
-                        @if($field->description)
-                            <p class="text-sm text-gray-600 mb-4">{{ $field->description }}</p>
-                        @endif
-                        <div class="border-t border-gray-200 pt-4">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-sm text-gray-600">Harga per jam:</span>
-                                <span class="text-lg font-bold text-emerald-600">Rp {{ number_format($field->price_per_hour, 0, ',', '.') }}</span>
-                            </div>
-                            <div id="total-price-display" class="flex justify-between items-center text-sm text-gray-600 hidden">
-                                <span class="font-medium">Total Harga:</span>
-                                <span id="total-price" class="text-xl font-bold text-gray-900"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+@section('content')
 
-            <!-- Booking Form -->
+{{-- Page Header --}}
+<section class="bg-gradient-hero pt-28 pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <a href="{{ route('booking.index') }}" class="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors mb-4">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali ke Daftar Lapangan
+        </a>
+        <h1 class="text-3xl font-bold text-white animate-fade-in-up">Booking {{ $field->name }}</h1>
+    </div>
+</section>
+
+<section class="py-12 bg-surface-50">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            {{-- Booking Form --}}
             <div class="lg:col-span-2">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-6">Isi Data Booking</h3>
+                <div class="card-admin rounded-2xl p-6 sm:p-8 animate-fade-in-up">
+                    <h2 class="text-xl font-bold text-surface-900 mb-6 flex items-center gap-2">
+                        <i data-lucide="calendar-plus" class="w-5 h-5 text-primary-500"></i>
+                        Form Booking
+                    </h2>
 
-                    <form action="{{ route('booking.store') }}" method="POST" id="bookingForm">
+                    <form method="POST" action="{{ route('booking.store') }}" id="booking-form">
                         @csrf
                         <input type="hidden" name="field_id" value="{{ $field->id }}">
 
-                        <!-- Tanggal Booking -->
-                        <div class="mb-6">
-                            <label for="booking_date" class="block text-sm font-medium text-gray-700 mb-2">
-                                Tanggal Booking <span class="text-red-500">*</span>
-                            </label>
-                            <input 
-                                type="date" 
-                                name="booking_date" 
-                                id="booking_date" 
-                                value="{{ old('booking_date') }}"
-                                min="{{ date('Y-m-d') }}"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('booking_date') border-red-500 @enderror"
-                                required
-                            >
-                            @error('booking_date')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+                        {{-- Jadwal --}}
+                        <div class="space-y-5 mb-8">
+                            <p class="text-sm font-semibold text-surface-500 uppercase tracking-wider">Jadwal</p>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label for="booking_date" class="form-label">Tanggal Booking</label>
+                                    <input type="date" name="booking_date" id="booking_date" class="form-input" min="{{ date('Y-m-d') }}" value="{{ old('booking_date') }}" required>
+                                    @error('booking_date') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                                <div>
+                                    <label for="start_time" class="form-label">Jam Mulai</label>
+                                    <select name="start_time" id="start_time" class="form-input" required>
+                                        <option value="">Pilih Jam</option>
+                                        @for($h = 7; $h <= 22; $h++)
+                                            <option value="{{ sprintf('%02d:00', $h) }}" {{ old('start_time') == sprintf('%02d:00', $h) ? 'selected' : '' }}>
+                                                {{ sprintf('%02d:00', $h) }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                    @error('start_time') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="duration" class="form-label">Durasi (Jam)</label>
+                                <select name="duration" id="duration" class="form-input" required>
+                                    <option value="">Pilih Durasi</option>
+                                    @for($d = 1; $d <= 8; $d++)
+                                        <option value="{{ $d }}" {{ old('duration') == $d ? 'selected' : '' }}>{{ $d }} Jam</option>
+                                    @endfor
+                                </select>
+                                @error('duration') <p class="form-error">{{ $message }}</p> @enderror
+                            </div>
+
+                            {{-- Availability indicator --}}
+                            <div id="availability-status" class="hidden px-4 py-3 rounded-xl text-sm font-medium items-center gap-2"></div>
                         </div>
 
-                        <!-- Jam Mulai -->
-                        <div class="mb-6">
-                            <label for="start_time" class="block text-sm font-medium text-gray-700 mb-2">
-                                Jam Mulai <span class="text-red-500">*</span>
-                            </label>
-                            <select 
-                                name="start_time" 
-                                id="start_time" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('start_time') border-red-500 @enderror"
-                                required
-                            >
-                                <option value="">Pilih jam...</option>
-                                @for($h = 6; $h < 22; $h++)
-                                    <option value="{{ sprintf('%02d:00', $h) }}" {{ old('start_time') == sprintf('%02d:00', $h) ? 'selected' : '' }}>
-                                        {{ sprintf('%02d:00', $h) }}
-                                    </option>
-                                @endfor
-                            </select>
-                            @error('start_time')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @else
-                                <p class="mt-1 text-sm text-gray-500">Jam operasional: 06:00 - 22:00</p>
-                            @enderror
+                        {{-- Data Customer --}}
+                        <div class="space-y-5 mb-8">
+                            <p class="text-sm font-semibold text-surface-500 uppercase tracking-wider">Data Pemesan</p>
+
+                            <div>
+                                <label for="guest_name" class="form-label">Nama Lengkap</label>
+                                <input type="text" name="guest_name" id="guest_name" class="form-input" placeholder="Masukkan nama lengkap" value="{{ old('guest_name', auth()->user()->name ?? '') }}" required>
+                                @error('guest_name') <p class="form-error">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label for="guest_phone" class="form-label">Nomor Telepon</label>
+                                    <input type="tel" name="guest_phone" id="guest_phone" class="form-input" placeholder="08xxxxxxxxxx" value="{{ old('guest_phone', auth()->user()->phone ?? '') }}" required>
+                                    @error('guest_phone') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label for="guest_email" class="form-label">Email</label>
+                                    <input type="email" name="guest_email" id="guest_email" class="form-input" placeholder="email@contoh.com" value="{{ old('guest_email', auth()->user()->email ?? '') }}" required>
+                                    @error('guest_email') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Durasi -->
-                        <div class="mb-6">
-                            <label for="duration" class="block text-sm font-medium text-gray-700 mb-2">
-                                Durasi (Jam) <span class="text-red-500">*</span>
-                            </label>
-                            <select 
-                                name="duration" 
-                                id="duration" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('duration') border-red-500 @enderror"
-                                required
-                            >
-                                <option value="">Pilih durasi...</option>
-                                @for($d = 1; $d <= 8; $d++)
-                                    <option value="{{ $d }}" {{ old('duration') == $d ? 'selected' : '' }}>
-                                        {{ $d }} Jam
-                                    </option>
-                                @endfor
-                            </select>
-                            @error('duration')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                            <!-- Availability Check Result -->
-                            <div id="availability-result" class="mt-2 hidden"></div>
+                        {{-- Pembayaran --}}
+                        <div class="space-y-5 mb-8">
+                            <p class="text-sm font-semibold text-surface-500 uppercase tracking-wider">Pembayaran</p>
+
+                            <div>
+                                <label class="form-label">Metode Pembayaran</label>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    @foreach(['transfer' => ['Transfer Bank', 'building-2'], 'cash' => ['Cash / Tunai', 'banknote'], 'midtrans' => ['Midtrans (Online)', 'credit-card']] as $value => [$label, $icon])
+                                        <label class="relative cursor-pointer">
+                                            <input type="radio" name="payment_method" value="{{ $value }}" class="peer hidden" {{ old('payment_method') == $value ? 'checked' : '' }}>
+                                            <div class="flex items-center gap-3 p-4 rounded-xl border-2 border-surface-200 peer-checked:border-primary-500 peer-checked:bg-primary-50 transition-all duration-200 hover:border-surface-300">
+                                                <i data-lucide="{{ $icon }}" class="w-5 h-5 text-surface-400 peer-checked:text-primary-600"></i>
+                                                <span class="text-sm font-medium text-surface-700">{{ $label }}</span>
+                                            </div>
+                                        </label>
+                                    @endforeach
+                                </div>
+                                @error('payment_method') <p class="form-error">{{ $message }}</p> @enderror
+                            </div>
                         </div>
 
-                        <div class="border-t border-gray-200 pt-6 mb-6"></div>
-
-                        <!-- Nama -->
-                        <div class="mb-6">
-                            <label for="guest_name" class="block text-sm font-medium text-gray-700 mb-2">
-                                Nama Lengkap <span class="text-red-500">*</span>
-                            </label>
-                            <input 
-                                type="text" 
-                                name="guest_name" 
-                                id="guest_name" 
-                                value="{{ old('guest_name') }}"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('guest_name') border-red-500 @enderror"
-                                placeholder="Masukkan nama lengkap"
-                                required
-                            >
-                            @error('guest_name')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+                        {{-- Catatan --}}
+                        <div class="mb-8">
+                            <label for="notes" class="form-label">Catatan (opsional)</label>
+                            <textarea name="notes" id="notes" rows="3" class="form-input" placeholder="Catatan tambahan...">{{ old('notes') }}</textarea>
+                            @error('notes') <p class="form-error">{{ $message }}</p> @enderror
                         </div>
 
-                        <!-- Email -->
-                        <div class="mb-6">
-                            <label for="guest_email" class="block text-sm font-medium text-gray-700 mb-2">
-                                Email <span class="text-red-500">*</span>
-                            </label>
-                            <input 
-                                type="email" 
-                                name="guest_email" 
-                                id="guest_email" 
-                                value="{{ old('guest_email') }}"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('guest_email') border-red-500 @enderror"
-                                placeholder="contoh@email.com"
-                                required
-                            >
-                            @error('guest_email')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Nomor Telepon -->
-                        <div class="mb-6">
-                            <label for="guest_phone" class="block text-sm font-medium text-gray-700 mb-2">
-                                Nomor Telepon <span class="text-red-500">*</span>
-                            </label>
-                            <input 
-                                type="text" 
-                                name="guest_phone" 
-                                id="guest_phone" 
-                                value="{{ old('guest_phone') }}"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('guest_phone') border-red-500 @enderror"
-                                placeholder="08xxxxxxxxxx"
-                                required
-                            >
-                            @error('guest_phone')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Metode Pembayaran -->
-                        <div class="mb-6">
-                            <label for="payment_method" class="block text-sm font-medium text-gray-700 mb-2">
-                                Metode Pembayaran <span class="text-red-500">*</span>
-                            </label>
-                            <select 
-                                name="payment_method" 
-                                id="payment_method" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('payment_method') border-red-500 @enderror"
-                                required
-                            >
-                                <option value="">Pilih metode pembayaran...</option>
-                                <option value="transfer" {{ old('payment_method') == 'transfer' ? 'selected' : '' }}>Transfer Bank</option>
-                                <option value="cash" {{ old('payment_method') == 'cash' ? 'selected' : '' }}>Cash (Bayar di Tempat)</option>
-                                <option value="midtrans" {{ old('payment_method') == 'midtrans' ? 'selected' : '' }}>Pembayaran Online (Midtrans)</option>
-                            </select>
-                            @error('payment_method')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Catatan -->
-                        <div class="mb-6">
-                            <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
-                                Catatan (Opsional)
-                            </label>
-                            <textarea 
-                                name="notes" 
-                                id="notes" 
-                                rows="3"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('notes') border-red-500 @enderror"
-                                placeholder="Tambahkan catatan jika ada..."
-                            >{{ old('notes') }}</textarea>
-                            @error('notes')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
-                            <a href="{{ route('booking.index') }}" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                                Batal
-                            </a>
-                            <button type="submit" id="submitBtn" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors shadow-sm disabled:bg-gray-400 disabled:cursor-not-allowed">
-                                Booking Sekarang
-                            </button>
-                        </div>
+                        <button type="submit" id="submit-btn" class="btn-primary w-full py-4 text-base gap-2">
+                            <i data-lucide="check" class="w-5 h-5"></i>
+                            Buat Booking
+                        </button>
                     </form>
                 </div>
             </div>
+
+            {{-- Field Info Sidebar --}}
+            <div class="lg:col-span-1">
+                <div class="card-admin rounded-2xl overflow-hidden sticky top-24 animate-fade-in-up delay-200">
+                    {{-- Image --}}
+                    <div class="h-48 bg-linear-to-br from-primary-100 to-primary-50 overflow-hidden">
+                        @if($field->photo)
+                            <img src="{{ asset('fields/' . $field->photo) }}" alt="{{ $field->name }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="flex items-center justify-center h-full">
+                                <i data-lucide="map" class="w-12 h-12 text-primary-300"></i>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="p-5">
+                        <h3 class="font-bold text-surface-900 mb-1">{{ $field->name }}</h3>
+                        @if($field->type)
+                            <span class="text-xs font-medium text-primary-600 capitalize">{{ str_replace('_', ' ', $field->type) }}</span>
+                        @endif
+                        <p class="text-sm text-surface-500 mt-3">{{ $field->description ?? '-' }}</p>
+
+                        <div class="mt-5 pt-5 border-t border-surface-100">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-sm text-surface-500">Harga per jam</span>
+                                <span class="font-bold text-primary-600">{{ $field->formatted_price }}</span>
+                            </div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-sm text-surface-500">Status</span>
+                                <span class="badge badge-available">Tersedia</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-surface-500">Jam Operasional</span>
+                                <span class="text-sm font-medium text-surface-700">07:00 - 23:00</span>
+                            </div>
+                        </div>
+
+                        {{-- Price summary --}}
+                        <div id="price-summary" class="hidden mt-5 pt-5 border-t border-surface-100">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-sm text-surface-500">Durasi</span>
+                                <span class="text-sm font-medium text-surface-700" id="summary-duration">-</span>
+                            </div>
+                            <div class="flex items-center justify-between mt-3">
+                                <span class="font-semibold text-surface-700">Total</span>
+                                <span class="text-xl font-bold text-primary-600" id="summary-total">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </main>
+    </div>
+</section>
 
-    <script>
-        const pricePerHour = {{ $field->price_per_hour }};
-        const fieldId = {{ $field->id }};
-        
-        // Calculate and display total price
-        function updateTotalPrice() {
-            const duration = document.getElementById('duration').value;
-            if (duration) {
-                const total = pricePerHour * parseInt(duration);
-                document.getElementById('total-price').textContent = 'Rp ' + total.toLocaleString('id-ID');
-                document.getElementById('total-price-display').classList.remove('hidden');
-            } else {
-                document.getElementById('total-price-display').classList.add('hidden');
-            }
+@endsection
+
+@push('scripts')
+<script>
+    const pricePerHour = {{ $field->price_per_hour }};
+    const fieldId = {{ $field->id }};
+
+    // Update price summary
+    function updateSummary() {
+        const duration = document.getElementById('duration').value;
+        const summary = document.getElementById('price-summary');
+
+        if (duration) {
+            summary.classList.remove('hidden');
+            document.getElementById('summary-duration').textContent = duration + ' Jam';
+            document.getElementById('summary-total').textContent = formatRupiah(pricePerHour * duration);
+        } else {
+            summary.classList.add('hidden');
+        }
+    }
+
+    // Check availability
+    async function checkAvailability() {
+        const date = document.getElementById('booking_date').value;
+        const time = document.getElementById('start_time').value;
+        const duration = document.getElementById('duration').value;
+        const statusEl = document.getElementById('availability-status');
+
+        if (!date || !time || !duration) {
+            statusEl.classList.add('hidden');
+            return;
         }
 
-        // Check availability via AJAX
-        function checkAvailability() {
-            const date = document.getElementById('booking_date').value;
-            const startTime = document.getElementById('start_time').value;
-            const duration = document.getElementById('duration').value;
-            const resultDiv = document.getElementById('availability-result');
-            const submitBtn = document.getElementById('submitBtn');
+        statusEl.classList.remove('hidden');
+        statusEl.className = 'px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 bg-surface-100 text-surface-500';
+        statusEl.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Mengecek ketersediaan...';
+        lucide.createIcons();
 
-            if (!date || !startTime || !duration) {
-                resultDiv.classList.add('hidden');
-                submitBtn.disabled = false;
-                return;
-            }
-
-            resultDiv.innerHTML = '<p class="text-sm text-gray-500">Mengecek ketersediaan...</p>';
-            resultDiv.classList.remove('hidden');
-
-            fetch('{{ route('booking.check') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({
-                    field_id: fieldId,
-                    booking_date: date,
-                    start_time: startTime,
-                    duration: parseInt(duration)
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.available) {
-                    resultDiv.innerHTML = '<p class="text-sm text-green-600 font-medium">✓ ' + data.message + '</p>';
-                    submitBtn.disabled = false;
-                } else {
-                    resultDiv.innerHTML = '<p class="text-sm text-red-600 font-medium">✗ ' + data.message + '</p>';
-                    submitBtn.disabled = true;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                resultDiv.innerHTML = '<p class="text-sm text-red-600">Gagal mengecek ketersediaan.</p>';
+        try {
+            const response = await axios.post('{{ route("booking.check-availability") }}', {
+                field_id: fieldId,
+                booking_date: date,
+                start_time: time,
+                duration: duration,
             });
+
+            if (response.data.available) {
+                statusEl.className = 'px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 bg-green-50 text-green-700 border border-green-200';
+                statusEl.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i> ' + response.data.message;
+            } else {
+                statusEl.className = 'px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 bg-red-50 text-red-700 border border-red-200';
+                statusEl.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4"></i> ' + response.data.message;
+            }
+            lucide.createIcons();
+        } catch (error) {
+            statusEl.className = 'px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 bg-red-50 text-red-700 border border-red-200';
+            statusEl.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4"></i> Gagal mengecek ketersediaan.';
+            lucide.createIcons();
         }
+    }
 
-        // Event listeners
-        document.getElementById('duration').addEventListener('change', function() {
-            updateTotalPrice();
-            checkAvailability();
-        });
-
-        document.getElementById('booking_date').addEventListener('change', checkAvailability);
-        document.getElementById('start_time').addEventListener('change', checkAvailability);
-    </script>
-</body>
-</html>
+    document.getElementById('duration').addEventListener('change', () => { updateSummary(); checkAvailability(); });
+    document.getElementById('booking_date').addEventListener('change', checkAvailability);
+    document.getElementById('start_time').addEventListener('change', checkAvailability);
+</script>
+@endpush

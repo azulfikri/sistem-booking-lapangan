@@ -1,124 +1,66 @@
-<x-layouts.admin title="Edit Admin">
-    <div class="max-w-3xl mx-auto">
-        <!-- Back Button -->
-        <div class="mb-6">
-            <a href="{{ route('admin.users') }}" class="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                Kembali ke Daftar Admin
-            </a>
-        </div>
+@extends('layouts.admin')
 
-        <!-- Form Card -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Edit Admin</h2>
+@section('title', 'Edit Admin')
+@section('page_title', 'Edit Admin')
+@section('page_subtitle', $user->name)
 
-            <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
-                @csrf
-                @method('PUT')
+@section('content')
 
-                <!-- Nama -->
-                <div class="mb-6">
-                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                        Nama Lengkap <span class="text-red-500">*</span>
-                    </label>
-                    <input 
-                        type="text" 
-                        name="name" 
-                        id="name" 
-                        value="{{ old('name', $user->name) }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('name') border-red-500 @enderror"
-                        placeholder="Masukkan nama lengkap"
-                        required
-                    >
-                    @error('name')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
+<div class="max-w-2xl">
+    <div class="card-admin rounded-2xl p-6 sm:p-8 animate-fade-in-up">
+        <form method="POST" action="{{ route('admin.users.update', $user->id) }}">
+            @csrf
+            @method('PUT')
+
+            <div class="space-y-5">
+                <div>
+                    <label for="name" class="form-label">Nama Lengkap</label>
+                    <input type="text" name="name" id="name" class="form-input" value="{{ old('name', $user->name) }}" required>
+                    @error('name') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
 
-                <!-- Email -->
-                <div class="mb-6">
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                        Email <span class="text-red-500">*</span>
-                    </label>
-                    <input 
-                        type="email" 
-                        name="email" 
-                        id="email" 
-                        value="{{ old('email', $user->email) }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('email') border-red-500 @enderror"
-                        placeholder="admin@example.com"
-                        required
-                    >
-                    @error('email')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
+                <div>
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" name="email" id="email" class="form-input" value="{{ old('email', $user->email) }}" required>
+                    @error('email') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
 
-                <!-- Telepon -->
-                <div class="mb-6">
-                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
-                        Nomor Telepon
-                    </label>
-                    <input 
-                        type="text" 
-                        name="phone" 
-                        id="phone" 
-                        value="{{ old('phone', $user->phone) }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('phone') border-red-500 @enderror"
-                        placeholder="08xxxxxxxxxx"
-                    >
-                    @error('phone')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
+                <div>
+                    <label for="phone" class="form-label">Nomor Telepon</label>
+                    <input type="tel" name="phone" id="phone" class="form-input" value="{{ old('phone', $user->phone) }}">
+                    @error('phone') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
 
-                <!-- Password (Optional) -->
-                <div class="mb-6">
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                        Password Baru
-                    </label>
-                    <input 
-                        type="password" 
-                        name="password" 
-                        id="password" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('password') border-red-500 @enderror"
-                        placeholder="Kosongkan jika tidak ingin mengubah password"
-                    >
-                    <p class="mt-1 text-sm text-gray-500">Minimal 8 karakter. Kosongkan jika tidak ingin mengubah password.</p>
-                    @error('password')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
+                <div>
+                    <label for="role" class="form-label">Role</label>
+                    <select name="role" id="role" class="form-input" required>
+                        <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="customer" {{ old('role', $user->role) == 'customer' ? 'selected' : '' }}>Customer</option>
+                    </select>
+                    @error('role') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
 
-                <!-- Konfirmasi Password -->
-                <div class="mb-6">
-                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
-                        Konfirmasi Password Baru
-                    </label>
-                    <input 
-                        type="password" 
-                        name="password_confirmation" 
-                        id="password_confirmation" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                        placeholder="Ulangi password baru"
-                    >
+                <div>
+                    <label for="password" class="form-label">Password Baru <span class="text-surface-400 font-normal">(kosongkan jika tidak ingin ganti)</span></label>
+                    <input type="password" name="password" id="password" class="form-input" placeholder="Minimal 8 karakter">
+                    @error('password') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
 
-                <!-- Role (Hidden, maintain admin) -->
-                <input type="hidden" name="role" value="{{ $user->role }}">
-
-                <!-- Buttons -->
-                <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
-                    <a href="{{ route('admin.users') }}" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                        Batal
-                    </a>
-                    <button type="submit" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors shadow-sm">
-                        Update Admin
-                    </button>
+                <div>
+                    <label for="password_confirmation" class="form-label">Konfirmasi Password Baru</label>
+                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-input" placeholder="Ulangi password baru">
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <div class="flex items-center gap-3 mt-8">
+                <button type="submit" class="btn-primary py-2.5 px-6 text-sm gap-2">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    Update
+                </button>
+                <a href="{{ route('admin.users') }}" class="px-6 py-2.5 rounded-xl text-sm font-medium text-surface-600 hover:bg-surface-100 transition-colors">Batal</a>
+            </div>
+        </form>
     </div>
-</x-layouts.admin>
+</div>
+
+@endsection

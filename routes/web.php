@@ -1,73 +1,98 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\FieldController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminBookingController;
 use App\Http\Controllers\Admin\AdminFieldController;
 use App\Http\Controllers\Admin\AdminUserController;
-use App\Http\Controllers\Admin\AdminBookingController;
-use App\Http\Controllers\PaymentController;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
+// ============================================================
+// PUBLIC ROUTES
+// ============================================================
+
+// Homepage
 Route::get('/', function () {
-    return view('welcome');
+    $fields = \App\Models\Field::where('status', 'available')->latest()->take(4)->get();
+    return view('welcome', compact('fields'));
 })->name('home');
 
+// Booking Routes (Public)
+Route::prefix('booking')->group(function () {
+    Route::get('/', [BookingController::class, 'index'])->name('booking.index');
+    Route::get('/create/{fieldId}', [BookingController::class, 'create'])->name('booking.create');
+    Route::post('/store', [BookingController::class, 'store'])->name('booking.store');
+    Route::post('/check-availability', [BookingController::class, 'checkAvailability'])->name('booking.check-availability');
+    Route::get('/{bookingCode}', [BookingController::class, 'show'])->name('booking.show');
+});
+
+// My Bookings (requires login)
+Route::get('/my-bookings', [BookingController::class, 'myBookings'])->middleware('auth')->name('booking.my-bookings');
+
+// ============================================================
+// PAYMENT ROUTES
+// ============================================================
+Route::prefix('payment')->group(function () {
+    Route::get('/process/{bookingCode}', [PaymentController::class, 'processPayment'])->name('payment.process');
+    Route::get('/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+});
+
+// Midtrans Webhook (no CSRF)
+Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
+
+// ============================================================
 // AUTH ROUTES
+// ============================================================
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 });
 
+Route::post('/logout', [LogoutController::class, 'logout'])->middleware('auth')->name('logout');
 
-Route::post('/logout', [LogoutController::class, 'logout'])->name('logout')->middleware('auth');
-
-// Temporary route for testing - remove in production
-Route::get('/logout-get', function () {
-    \Illuminate\Support\Facades\Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-    return redirect('/login')->with('success', 'Berhasil logout!');
-});
-
-// ADMIN ROUTES (Protected)
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+// ============================================================
+// ADMIN ROUTES (requires auth + admin middleware)
+// ============================================================
+Route::prefix('admin')->middleware('admin')->group(function () {
     // Dashboard
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
-    // Kelola Lapangan (Fields Management)
-    Route::get('/lapangan', [AdminFieldController::class, 'index'])->name('lapangan');
-    Route::get('/lapangan/create', [AdminFieldController::class, 'create'])->name('lapangan.create');
-    Route::post('/lapangan', [AdminFieldController::class, 'store'])->name('lapangan.store');
-    Route::get('/lapangan/{id}/edit', [AdminFieldController::class, 'edit'])->name('lapangan.edit');
-    Route::put('/lapangan/{id}', [AdminFieldController::class, 'update'])->name('lapangan.update');
-    Route::delete('/lapangan/{id}', [AdminFieldController::class, 'destroy'])->name('lapangan.destroy');
+    // Lapangan Management
+    Route::prefix('lapangan')->group(function () {
+        Route::get('/', [AdminFieldController::class, 'index'])->name('admin.lapangan');
+        Route::get('/create', [AdminFieldController::class, 'create'])->name('admin.lapangan.create');
+        Route::post('/store', [AdminFieldController::class, 'store'])->name('admin.lapangan.store');
+        Route::get('/{id}/edit', [AdminFieldController::class, 'edit'])->name('admin.lapangan.edit');
+        Route::put('/{id}', [AdminFieldController::class, 'update'])->name('admin.lapangan.update');
+        Route::delete('/{id}', [AdminFieldController::class, 'destroy'])->name('admin.lapangan.destroy');
+    });
 
-    // Manajemen Admin (User Management)
-    Route::get('/users', [AdminUserController::class, 'index'])->name('users');
-    Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
-    Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
-    Route::get('/users/{id}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
-    Route::put('/users/{id}', [AdminUserController::class, 'update'])->name('users.update');
-    Route::delete('/users/{id}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+    // Booking Management
+    Route::prefix('bookings')->group(function () {
+        Route::get('/', [AdminBookingController::class, 'index'])->name('admin.bookings');
+        Route::get('/{id}', [AdminBookingController::class, 'show'])->name('admin.bookings.show');
+        Route::put('/{id}/payment-status', [AdminBookingController::class, 'updatePaymentStatus'])->name('admin.bookings.update-payment');
+        Route::put('/{id}/booking-status', [AdminBookingController::class, 'updateBookingStatus'])->name('admin.bookings.update-status');
+        Route::delete('/{id}', [AdminBookingController::class, 'destroy'])->name('admin.bookings.destroy');
+    });
 
-    // Pesanan Masuk (Bookings)
-    Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings');
-    Route::get('/bookings/{id}', [AdminBookingController::class, 'show'])->name('bookings.show');
-    Route::patch('/bookings/{id}/payment', [AdminBookingController::class, 'updatePaymentStatus'])->name('bookings.updatePayment');
-    Route::patch('/bookings/{id}/status', [AdminBookingController::class, 'updateBookingStatus'])->name('bookings.updateStatus');
-    Route::delete('/bookings/{id}', [AdminBookingController::class, 'destroy'])->name('bookings.destroy');
+    // User Management
+    Route::prefix('users')->group(function () {
+        Route::get('/', [AdminUserController::class, 'index'])->name('admin.users');
+        Route::get('/create', [AdminUserController::class, 'create'])->name('admin.users.create');
+        Route::post('/store', [AdminUserController::class, 'store'])->name('admin.users.store');
+        Route::get('/{id}/edit', [AdminUserController::class, 'edit'])->name('admin.users.edit');
+        Route::put('/{id}', [AdminUserController::class, 'update'])->name('admin.users.update');
+        Route::delete('/{id}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+    });
 });
-
-// BOOKING ROUTES (Public)
-Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
-Route::get('/booking/create/{field}', [BookingController::class, 'create'])->name('booking.create');
-Route::post('/booking/check-availability', [BookingController::class, 'checkAvailability'])->name('booking.check');
-Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
-Route::get('/booking/{code}', [BookingController::class, 'show'])->name('booking.show');
-Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('booking.my')->middleware('auth');
-
-// PAYMENT ROUTES (Public)
-Route::get('/payment/{code}', [PaymentController::class, 'processPayment'])->name('payment.process');
-Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
-Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');

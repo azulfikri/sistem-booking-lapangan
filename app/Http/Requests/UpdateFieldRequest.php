@@ -24,6 +24,7 @@ class UpdateFieldRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'type' => ['nullable', 'in:futsal,badminton,basket,tenis,voli,mini_soccer'],
             'price_per_hour' => ['required', 'numeric', 'min:0'],
             'description' => ['nullable', 'string'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'], // Max 2MB
